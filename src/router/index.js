@@ -31,6 +31,15 @@ export default [
     component: () => import('@/views/vuex/store')
   },
   {
+    path: '/count',
+    name: 'count',
+    component: () => import('@/views/Count')
+  },
+  {
+    path: '/split',
+    component: () => import('@/views/SplitPane')
+  },
+  {
     path: '*',
     component: () => import('@/views/error')
   }
