@@ -40,6 +40,14 @@ export default [
     component: () => import('@/views/SplitPane')
   },
   {
+    path: '/render_demo',
+    component: () => import('@/views/demo/renderPage')
+  },
+  {
+    path: '/menu',
+    component: () => import('@/views/demo/menu')
+  },
+  {
     path: '*',
     component: () => import('@/views/error')
   }

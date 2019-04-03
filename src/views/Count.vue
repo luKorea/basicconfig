@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import CountTo from '@/components/count-to/index'
+import CountTo from '_c/count-to'
 export default {
   name: 'Count',
   components: {

@@ -1,7 +1,7 @@
 <template>
   <div class="split">
     <div class="split-pane-count">
-    <split></split>
+    <split :value.sync="offset"></split>
     </div>
   </div>
 </template>
@@ -12,6 +12,11 @@ export default {
   name: 'SplitPane',
   components: {
     Split
+  },
+  data () {
+    return {
+      offset: 0.8
+    }
   }
 }
 </script>
