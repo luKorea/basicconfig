@@ -21,6 +21,26 @@ export default {
     AMenu,
     AMenuItem,
     ASubmenu
+  },
+  data () {
+    return {
+      // 递归渲染
+      list: [
+        { title: '帅哥' },
+        { title: '美女' },
+        {
+          title: '一级标题',
+          children: [
+            { title: '二级标题' },
+            { title: '二级标题' },
+            {
+              title: '三级标题',
+              children: { title: '三级标题内容' }
+            }
+          ]
+        }
+      ]
+    }
   }
 }
 </script>

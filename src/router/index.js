@@ -13,14 +13,6 @@ export default [
     } */
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/Login'),
-    meta: {
-      title: '登录页面'
-    }
-  },
-  {
     path: '/about',
     name: 'about',
     component: () => import(/* webpackChunkName: "about" */ '@/views/About')
@@ -46,6 +38,11 @@ export default [
   {
     path: '/menu',
     component: () => import('@/views/demo/menu')
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/Login')
   },
   {
     path: '*',

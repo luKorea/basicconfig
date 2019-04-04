@@ -29,8 +29,8 @@ class HttpRequest {
     //  响应拦截器
     instance.interceptors.response.use(res => {
       delete this.queue[url]
-      const { data, status } = res
-      return { data, status }
+      const { data } = res
+      return { data }
     }, error => {
       delete this.queue[url]
       return Promise.reject(error)

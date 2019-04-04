@@ -1,8 +1,7 @@
 // 模拟数据
 import Mock from 'mockjs'
-import { getUserInfo } from './response/user'
+// import { getUserInfo } from './response/user'
 
-Mock.mock('http://localhost:3000/getUserInfo', getUserInfo())
-
+// Mock.mock('http://localhost:3000/getUserInfo', getUserInfo())
 
 export default Mock
