@@ -1,10 +1,24 @@
-import Home from '../views/Home'
+import Home from '@/views/Home'
 export default [
   {
     path: '/',
-    name: 'home',
+    name: 'layout',
     alias: '/main', // 设置别名
-    component: Home
+    component: () => import('@/views/layout/Layout'),
+    children: [
+      {
+        path: 'home',
+        component: Home
+      },
+      {
+        path: 'table',
+        component: () => import('@/views/Table')
+      },
+      {
+        path: 'tree',
+        component: () => import('@/views/Tree')
+      }
+    ]
     // 独立守卫
     /* beforeEnter: (to, from, next) => {
       if (from.name === 'about') alert('这是从about页面跳转的')

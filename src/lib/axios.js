@@ -1,6 +1,8 @@
 // 封装 axios
 import axios from 'axios'
 import baseUrl from '@/config/'
+// 非必要字段
+import { getToken } from './util'
 
 class HttpRequest {
   constructor (baseURl = baseUrl) {
@@ -22,6 +24,8 @@ class HttpRequest {
     instance.interceptors.request.use(config => {
       if (Object.keys(this.queue).length) {}
       this.queue[url] = true
+      // 非必要字段
+      config.headers['authorization'] = getToken()
       return config
     }, error => {
       return Promise.reject(error)

@@ -1,27 +1,36 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-    <button @click="getUser">获取用户列表</button>
+    <!--<button @click="getUser">获取用户列表</button>-->
+    <button @click="test">测试接口</button>
+    <br>
+    <span v-html="date"></span>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '../components/HelloWorld'
 import { getUserInfo } from '@/api/user'
 
 export default {
   name: 'home',
-  components: {
-    HelloWorld
-
+  data () {
+    return {
+      date: ''
+    }
   },
   methods: {
     getUser () {
       getUserInfo({ userId: 20 }).then(res => {
         console.log(res)
       })
+    },
+    test () {
+      fetch('/tests/1')
+        .then(res => {
+          return res.json()
+        }).then(data => {
+          this.date = data.drc
+        })
     }
   }
   // 进入当前页面 （组件守卫）
@@ -38,3 +47,5 @@ export default {
   } */
 }
 </script>
+<style scoped lang="stylus">
+</style>
