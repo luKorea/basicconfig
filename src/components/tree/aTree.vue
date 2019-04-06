@@ -1,10 +1,16 @@
 <template>
-  <div>树形结构</div>
+  <Tree :data="data" show-checkbox></Tree>
 </template>
 
 <script>
 export default {
-  name: 'aTree'
+  name: 'aTree',
+  props: {
+    data: {
+      type: Array,
+      default: () => []
+    }
+  }
 }
 </script>
 

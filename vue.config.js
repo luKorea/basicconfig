@@ -21,8 +21,8 @@ module.exports = {
   productionSourceMap: false,
   // 配置代理
   devServer: {
-    proxy: 'http://localhost:3000'
-    // proxy: 'http://172.30.95.247:9090'
+    // proxy: 'http://localhost:3000'
+     proxy: 'http://172.30.95.247:9090'
   }
 
 }

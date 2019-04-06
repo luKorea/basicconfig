@@ -1,18 +1,326 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <button id="test">测试接口</button>
+<script type="text/javascript">
+  $(document).ready(function () {
+    var winHeight=0;
+    if (window.innerHeight) {
+      winHeight = window.innerHeight;
+    } else if ((document.body) && (document.body.clientHeight)) {
+      winHeight = document.body.clientHeight;
+    }
+    //通过深入Document内部对body进行检测，获取浏览器窗口高度
+    if (document.documentElement && document.documentElement.clientHeight) {
+      winHeight = document.documentElement.clientHeight;
+    }
+    $("#runcode").click(function() {
+      submitTryit();
+    }) ;
+    $("#isautorun").prop( "checked", true );
+    height = (winHeight - 60) * 0.86;
+    $('#splitContainer').jqxSplitter({ height: height, width: '100%', orientation: 'vertical', panels: [{ size: '50%' }, { size: '50%' }] });
+    $('#leftSplitter').jqxSplitter({ height: '100%', width: '100%', orientation: 'horizontal',  panels: [{ size: '50%' }, { size: '50%'}] });
+    $('#rightSplitter').jqxSplitter({ height: '100%', width: '100%', orientation: 'horizontal',  panels: [{ size: '50%' }, { size: '50%'}] });
+  });
+  // CM OPTIONS
+  var cm_opt = {
+    mode: 'text/html',
+    gutter: true,
+    lineNumbers: true,
+    autoCloseBrackets:true,
+    lineWrapping: true,
+    matchBrackets: true,
+    autoCloseTags:true
+  };
+  // HTML EDITOR
+  var html_box = document.querySelector('#code-html');
+  var html_editor = CodeMirror.fromTextArea(html_box, cm_opt);
+  //var isautorun = $('#isautorun').prop('checked');
+  html_editor.on('change',function (inst, changes) {
+    if($('#isautorun').prop('checked')) {
+      submitTryit();
+    }
+
+  });
+  // CSS EDITOR
+  cm_opt.mode = 'css';
+  var css_box = document.querySelector('#code-css');
+  var css_editor = CodeMirror.fromTextArea(css_box, cm_opt);
 
 
-<script>
-    let TestA = `<a href="http://www.baidu.com">你好</a>`;
-    document.documentElement.innerHTML = TestA;
+  css_editor.on('change', function (inst, changes) {
+    if($('#isautorun').prop('checked')) {
+      submitTryit();
+    }
+  });
 
+  // JAVASCRIPT EDITOR
+  cm_opt.mode = 'javascript';
+  var js_box = document.querySelector('#code-js');
+  var js_editor = CodeMirror.fromTextArea(js_box, cm_opt);
+
+
+  js_editor.on('change', function (inst, changes) {
+    if($('#isautorun').prop('checked')) {
+      submitTryit();
+    }
+  });
+  // 生成HTML代码
+  $("#basehtml").click(function() {
+    _html_code = "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<title>文档标题</title>\n</head>\n<body>\n\t<h1>我的第一个HTML页面</h1>\n\t<p>我的第一个段落。</p>\n</body>\n</html>\n";
+    html_editor.getDoc().setValue(_html_code);
+  });
+
+
+  $("#librep").click(function(){ $("#libs").modal("show"); });
+  $( "select" ).change(function() {
+    $( "select option:selected" ).each(function() {
+      _thisvar = $(this).val();
+      _inithtmlcode = html_editor.getValue();
+      if(_thisvar=='more'){
+        $("#libs").modal("show");
+      } else if(_thisvar == 'jq') {
+        _html_script_code = "<script src=\"https://cdn.staticfile.org/jquery/2.2.4/jquery.min.js\"><\/script>\n";
+        html_editor.getDoc().setValue(_html_script_code + _inithtmlcode);
+      }else if(_thisvar == 'bs') {
+        _html_script_code = "<link rel=\"stylesheet\" href=\"https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css\">\n<script src=\"https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js\"><\/script>\n<script src=\"https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js\"><\/script>\n";
+        html_editor.getDoc().setValue(_html_script_code + _inithtmlcode);
+      }else if(_thisvar == 'ag') {
+        _html_script_code = "<script src=\"https://cdn.staticfile.org/angular.js/1.6.6/angular.min.js\"><\/script>\n";
+        html_editor.getDoc().setValue(_html_script_code + _inithtmlcode);
+      }else if(_thisvar == 'vue') {
+        _html_script_code = "<script src=\"https://cdn.staticfile.org/vue/2.2.2/vue.min.js\"><\/script>\n";
+        html_editor.getDoc().setValue(_html_script_code + _inithtmlcode);
+      }else if(_thisvar == 'fa') {
+        _html_script_code = "<link rel=\"stylesheet\" href=\"https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css\">\n";
+        html_editor.getDoc().setValue(_html_script_code + _inithtmlcode);
+      }
+    });
+  });
+
+  $('#libs').on('hidden.bs.modal', function () {
+    $("#sel1 option:first-child").attr('selected', true);
+    $("#sel1 option:last-child").attr('selected', false);
+    $("#libs-table tr").removeClass("success");
+  })
+
+
+  $("#filter").keyup(function() {
+    _search_value = $(this).val();
+
+    $.get('https://api.cdnjs.com/libraries',{search:_search_value},function(data) {
+      var _val_tr ='';
+      $("#fa-spinner").show();
+      $.each(data.results, function(i, item) {
+        if(i < 10) {
+          _val_tr += '<tr><td>'+item.name+' </td><td>'+item.latest+'</td><td>&nbsp;&nbsp;<i class="fa fa-paper-plane-o" aria-hidden="true"></i>&nbsp;&nbsp;</td></tr>';
+        } else {
+          return false;
+        };
+      });
+      if(_val_tr) {
+        $("#libs-table").html('<tr><th>库名</th><th>地址</th><th>插入</th></tr>' + _val_tr);
+      }
+      $("#fa-spinner").hide();
+    });
+  });
+  $( document ).ajaxComplete(function() {
+    $("tr").not(':first').hover(
+      function () {
+        if(!$(this).hasClass("success")) {
+          $(this).addClass("warning");
+        }
+      },
+      function () {
+        $(this).removeClass("warning");
+      }
+    );
+    $("tr").not(':first').click(function() {
+      if(!$(this).hasClass("success")) {
+        _editor_content = html_editor.getValue();
+        $(this).addClass("success")
+        $(this).removeClass("warning");
+        _libsrc = $(this).find("td").eq(1).text();
+        if(_editor_content.indexOf(_libsrc) !== -1 ) {
+          return;
+        }
+        if( _libsrc.indexOf('.js')!==-1 ){
+          _libsrc = '<script src="'+_libsrc+'"><\/script>\n';
+        } else if(_libsrc.indexOf('.css')!==-1) {
+          _libsrc = '<link rel="stylesheet" href="'+_libsrc+'">\n';
+        }
+
+        patternBody = /<body[^>]*>((.|[\n\r])*)<\/body>/im;
+        array_matches_body = patternBody.exec(_editor_content);
+        patternHead = /<head[^>]*>((.|[\n\r])*)<\/head>/im;
+        array_matches_head = patternHead.exec(_editor_content);
+
+        if(array_matches_head) {
+          _editor_content = _editor_content.replace('</head>', _libsrc + '</head>');
+
+        } else if(array_matches_body) {
+          _editor_content = _editor_content.replace('</body>', _libsrc + '</body>');
+        } else {
+          _editor_content = _libsrc + _editor_content;
+        }
+        html_editor.getDoc().setValue(_editor_content);
+      }
+    });
+  });
+
+  $("#save").click(function() {
+    post_title = $("#post_title").val().trim();
+    var isnum = /^\d+$/.test(post_title);
+    var isletter = /^[a-zA-Z]+$/.test(post_title);
+    if( isnum ) {
+      alert("请认真填写标题！");
+    } else if( isletter ) {
+      alert("加点中文描述，大家更容易理解！");
+    }else if(post_title=="" || post_title.length<6) {
+      alert("标题不能为空且不能少于6个字符……");
+    } else {
+      var htmlSource = html_editor.getValue(),
+        cssSource = css_editor.getValue(),
+        jsSource = js_editor.getValue(),
+        post_content = '';
+      if(htmlSource!='' || jsSource!='' || cssSource!='') {
+        $.post("/savecode.php", {post_title:post_title, html: htmlSource, js: jsSource, css:cssSource,filename: ""}, function(data){
+
+          if(data.errno) {
+            alert(data.msg)
+          } else {
+            $("#save").prop('disabled',false);
+            alert(data.msg)
+            window.location.href = data.url
+          }
+
+        }, "json");
+      } else {
+        alert("请输入你要展示的代码……");
+      }
+    }
+
+  });
+  html_editor.setSize('100%','100%');
+  js_editor.setSize('100%', '100%');
+  css_editor.setSize('100%','100%');
+
+
+
+
+  function submitTryit() {
+    // 基础模板
+
+    var html = html_editor.getValue(),
+      css = css_editor.getValue(),
+      js = js_editor.getValue(),
+      src = html;
+    if (html) {
+      var patternHtmlTag = /<html([^>]*)>/im;
+      var array_matches_html_tag = patternHtmlTag.exec(src);
+      if (array_matches_html_tag) {
+        src = src.replace('<html>', '<html ' + array_matches_html_tag[1] + '>');
+      }
+      var patternHead = /<head[^>]*>((.|[\n\r])*)<\/head>/im
+      var array_matches_head = patternHead.exec(src);
+
+      var patternBodyTag = /<body([^>]*)>/im;
+      var array_matches_body_tag = patternBodyTag.exec(src);
+      if (array_matches_body_tag) {
+        src = src.replace('<body>', '<body ' + array_matches_body_tag[1] + '>');
+      }
+
+    }
+    //console.log(css);
+    if (css.indexOf('<style>') !== -1) {
+      $(".alert-danger span").text('CSS 编辑框不需要 <style> 标签');
+      $(".alert-danger").show().delay(5000).fadeOut();
+      return;
+    } else if (js.indexOf('<script>') !== -1) {
+      $(".alert-danger span").text('JavaScript 编辑框不需要 <script> 标签');
+      $(".alert-danger").show().delay(5000).fadeOut();
+      return;
+    } else {
+      $(".alert-danger").hide();
+    }
+
+    // CSS
+    if(css) {
+      css = '<style>' + css + '</style>';
+      if (array_matches_head) {
+        src = src.replace('</head>', css + '</head>');
+      } else if (array_matches_body_tag) {
+        src = src.replace('</body>', css + '</body>');
+      } else {
+        src +=  css;
+      }
+    }
+
+    // Javascript
+    if(js) {
+      js = '<script>' + js + '<\/script>';
+      if (array_matches_body_tag) {
+        src = src.replace('</body>', js + '</body>');
+      }else {
+        src +=  js;
+      }
+    }
+
+    text = src;
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("frameborder", "0");
+    ifr.setAttribute("id", "iframeResult");
+    document.getElementById("output").innerHTML = "";
+    document.getElementById("output").appendChild(ifr);
+
+    var ifrw = (ifr.contentWindow) ? ifr.contentWindow: (ifr.contentDocument.document) ? ifr.contentDocument.document: ifr.contentDocument;
+    ifrw.document.open();
+    ifrw.document.write(text);
+    ifrw.document.close();
+    autodivheight();
+  }
+  submitTryit();
+  window.addEventListener("resize", autodivheight);
+  function autodivheight(){
+    var winHeight=0;
+    if (window.innerHeight) {
+      winHeight = window.innerHeight;
+    } else if ((document.body) && (document.body.clientHeight)) {
+      winHeight = document.body.clientHeight;
+    }
+    //通过深入Document内部对body进行检测，获取浏览器窗口高度
+    if (document.documentElement && document.documentElement.clientHeight) {
+      winHeight = document.documentElement.clientHeight;
+    }
+    height = height = (winHeight - 60) * 0.86;
+    document.getElementById("splitContainer").style.height= height +"px";
+  }
 </script>
 
-</body>
-</html>
+
+</div>
+<div style="display:none;">
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?68c6d4f0f6c20c5974b17198fa6fd40a";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+      (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else{
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+      })();
+    </script>
+    window.onload = function(){
+        function test() {
+            console.log(test);
+        }
+        test();
+    }

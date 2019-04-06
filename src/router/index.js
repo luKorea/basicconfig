@@ -17,6 +17,10 @@ export default [
       {
         path: 'tree',
         component: () => import('@/views/Tree')
+      },
+      {
+        path: 'form',
+        component: () => import('@/views/Form')
       }
     ]
     // 独立守卫

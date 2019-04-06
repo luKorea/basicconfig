@@ -1,21 +1,23 @@
 <template>
   <div class="home">
     <!--<button @click="getUser">获取用户列表</button>-->
-    <button @click="test">测试接口</button>
-    <br>
-    <span v-html="date"></span>
+    <button @click="tests">测试接口</button>
+   <component :is="s" :type="type">
+   </component>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import { getUserInfo } from '@/api/user'
-
 export default {
   name: 'home',
   data () {
     return {
-      date: ''
+      s: 'script',
+      type: 'text/javascript',
+      d: '',
+      fn: Function
     }
   },
   methods: {
@@ -24,12 +26,12 @@ export default {
         console.log(res)
       })
     },
-    test () {
-      fetch('/tests/1')
+    tests () {
+      fetch('/tests/2')
         .then(res => {
           return res.json()
         }).then(data => {
-          this.date = data.drc
+          this.fn = data.drc
         })
     }
   }

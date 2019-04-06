@@ -25,3 +25,11 @@ export const authorization = () => {
     url: '/users/authorization'
   })
 }
+
+export const postData = (data) => {
+  return axios.request({
+    url: '/formData',
+    method: 'post',
+    data: data
+  })
+}
